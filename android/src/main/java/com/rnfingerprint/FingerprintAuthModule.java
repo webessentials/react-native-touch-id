@@ -76,7 +76,7 @@ public class FingerprintAuthModule extends ReactContextBaseJavaModule implements
 
         int result = isFingerprintAuthAvailable();
         if (result == FingerprintAuthConstants.IS_SUPPORTED) {
-            reactSuccessCallback.invoke("Fingerprint");
+            reactSuccessCallback.invoke("Biometric");
         } else {
             reactErrorCallback.invoke("Not supported.", result);
         }
@@ -139,7 +139,7 @@ public class FingerprintAuthModule extends ReactContextBaseJavaModule implements
             return;
         }
 
-        if (authConfig.getBoolean("useBackground")) {
+        if (authConfig.hasKey("useBackground") && authConfig.getBoolean("useBackground")) {
             // Use singleton for avoiding duplication
             background = BiometricBackground.getInstance();
             background.setCancelButtonText(cancelText);
@@ -185,7 +185,6 @@ public class FingerprintAuthModule extends ReactContextBaseJavaModule implements
                     // if we don't have a background => end auth
                     if (background == null) {
                         inProgress = false;
-                        //                    reactErrorCallback.invoke(errString, errorCode);
                     }
                 }
 
@@ -196,7 +195,7 @@ public class FingerprintAuthModule extends ReactContextBaseJavaModule implements
                     // if we don't have a background => end auth
                     if (background == null) {
                         inProgress = false;
-                        reactErrorCallback.invoke(BiometricPrompt.ERROR_CANCELED, "Authentication failed");
+                        // reactErrorCallback.invoke("Authentication failed", BiometricPrompt.ERROR_CANCELED);
                     }
                 }
 
@@ -213,8 +212,8 @@ public class FingerprintAuthModule extends ReactContextBaseJavaModule implements
 
             promptInfo = new BiometricPrompt.PromptInfo.Builder()
                     .setTitle(reason)
-                    .setConfirmationRequired(true)
-                    .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG | BiometricManager.Authenticators.BIOMETRIC_WEAK | BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                    .setNegativeButtonText(cancelText)
+                    .setConfirmationRequired(false)
                     .build();
         }
 
